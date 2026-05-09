@@ -83,26 +83,21 @@ impl App {
                                     if let Some(ref exe) = config.executable {
                                         ui.add_space(4.);
                                         if ui.button("Deploy_OpenEmu".localize()).clicked() {
-                                            let cmd = util::default_shell();
-                                            #[cfg(windows)]
-                                            let user_arg = shlex::split(exe)
-                                                    .map(|v| {
-                                                        [
-                                                            "&".to_string(),
-                                                            v.iter()
-                                                                .map(|s| format!("'{}'", s))
-                                                                .collect::<Vec<_>>()
-                                                                .join(" "),
-                                                        ].join(" ")
-                                                    })
-                                                    .unwrap_or_default();
-                                            #[cfg(not(windows))]
-                                            let user_arg = exe;
-                                            let (shell, arg) = (&cmd.0, &cmd.1);
-                                            let _ = std::process::Command::new(shell)
-                                                .args(arg.iter())
-                                                .arg(user_arg)
-                                                .spawn();
+                                            let mut iter = shlex::split(&exe.replace("\\","/"))
+                                                .unwrap_or_default()
+                                                .into_iter();
+                                            let (cmd, args) = (
+                                                iter.next().unwrap(),
+                                                iter.collect::<Vec<_>>()
+                                            );
+                                            if let Err(e) = std::process::Command::new(cmd)
+                                                .args(args)
+                                                .status() {
+                                                self.do_update(Message::Error(
+                                                    anyhow::Error::from(e)
+                                                        .context("Failed to run open emulator"),
+                                                ));
+                                            }
                                         }
                                     }
                                     if ui
