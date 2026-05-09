@@ -563,8 +563,8 @@ pub fn import_cemu_settings(core: &Manager, path: &Path) -> Result<Message> {
             }
         });
     let exe_cmd = if exe.is_some() {
-        if base.is_some() {
-            let rpx = PathBuf::from(base.unwrap())
+        if let Some(item) = base {
+            let rpx = item
                 .parent()
                 .unwrap()
                 .join("code")
