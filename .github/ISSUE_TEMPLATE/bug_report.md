@@ -1,0 +1,74 @@
+name: Bug Report
+description: File a bug report.
+title: "[Bug]: "
+labels: ["bug", "triage"]
+assignees:
+  - GingerAvalanche
+type: bug
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to fill out this bug report!
+  - type: dropdown
+    id: version
+    attributes:
+      label: Version
+      description: What version of UKMM are you running?
+      options:
+        - 0.17.0-1 (Latest hotfix)
+        - 0.17.0 (Latest)
+        - 0.16.0
+        - 0.15.3
+        - 0.15.2
+        - 0.15.1
+        - 0.15.0
+        - 0.14.0
+        - 0.13.0
+      default: 0
+    validations:
+      required: true
+  - type: dropdown
+    id: operating-system
+    attributes:
+      label: What operating system are you seeing the problem on?
+      multiple: true
+      options:
+        - Windows
+        - macOS
+        - Linux (any distro)
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: Also tell us, what did you expect to happen?
+      placeholder: Please be as detailed as possible.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to Reproduce
+      description: What do we need to do on our computers to make this error happen?
+      placeholder: Please be as detailed as possible.
+    validations:
+      required: true
+  - type: textarea
+    id: mod-list
+    attributes:
+      label: Mod List
+      description: If applicable, what mods (and their versions) were installed when this happened?
+      placeholder: You may instead upload screenshots later in the form, if you'd prefer.
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant log output
+      description: Please copy and paste any relevant log output. This will be automatically formatted into code, so no need for backticks.
+      render: shell
+  - type: upload
+    id: screenshots
+    attributes:
+      label: Upload screenshots
+      description: If applicable, add screenshots to help explain your problem.
+    validations:
+      required: false
