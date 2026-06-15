@@ -107,6 +107,8 @@ struct BnpConverter {
     packs: Arc<DashSet<PathBuf>>,
     parent_packs: DashSet<PathBuf>,
     opt_master_cache: Arc<DashMap<PathBuf, Vec<u8>>>,
+    root_maps: Arc<DashMap<String, Vec<u8>>>,
+    opt_maps: Arc<DashMap<String, Vec<u8>>>,
 }
 
 impl BnpConverter {
@@ -529,6 +531,8 @@ pub fn unpack_bnp(core: &crate::core::Manager, path: &Path) -> Result<PathBuf> {
         current_root: tempdir.clone(),
         path: tempdir.clone(),
         opt_master_cache: Default::default(),
+        root_maps: Default::default(),
+        opt_maps: Default::default(),
     };
     let path = converter.convert()?;
     log::info!("BNP unpacked");

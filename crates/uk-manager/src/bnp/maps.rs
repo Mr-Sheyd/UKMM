@@ -9,7 +9,6 @@ use roead::{
     yaz0::{compress, decompress},
 };
 use rustc_hash::FxHashMap;
-use crate::util;
 use super::BnpConverter;
 
 fn merge_map(base: &mut Byml, diff: Byml) -> Result<()> {
@@ -82,19 +81,12 @@ impl BnpConverter {
         let maps_path = self.current_root.join("logs/map.yml");
         if !maps_path.exists() { return Ok(()) }
 
-        let canon_rel = Path::new("Map/MainField");
-        let map_tmp = self.current_root.join("map_tmp");
-        std::fs::create_dir_all(map_tmp.join(canon_rel))
-            .context("Failed to create temp MainField dir")?;
-        for x in 'A'..'K' {
-            for y in 1..9 {
-                let current_dir = canon_rel.join(format!("{x}-{y}"));
-                std::fs::create_dir(map_tmp.join(&current_dir))
-                    .with_context(||
-                        format!("Failed to create temp map dir {}", &current_dir.display())
-                    )?;
-            }
-        }
+        let is_root = self.current_root == self.path;
+        let maps = if is_root {
+            self.root_maps.clone()
+        } else {
+            self.opt_maps.clone()
+        };
         let (has_aoc_dump, dump_static_pack) = if let Ok(aoc_main_field) =
                 self.dump.get_aoc_bytes_uncached("Aoc/0010/Pack/AocMainField.pack") {
                 (true, Sarc::new(aoc_main_field)
@@ -111,60 +103,32 @@ impl BnpConverter {
         diff.into_par_iter().map(|(hash, _)| -> Result<()> {
             let (section, load_type) = hash.split_once('_')
                 .ok_or(anyhow!("Bad map diff"))?;
-            let diff_file = format!("{section}/{section}_{load_type}.smubin");
-            let path = map_tmp.join(canon_rel.join(&diff_file));
-            match load_type {
-                "Dynamic" => {
-                    if self.current_root != self.path &&
-                        let root_path = self.path
-                            .join("map_tmp")
-                            .join(canon_rel)
-                            .join(&diff_file) &&
-                        root_path.exists() {
-                        std::fs::copy(&root_path, path)
-                            .map(|_| {})
-                            .with_context(|| format!("Failed to copy {hash} from root"))
-                    } else if has_aoc_dump {
-                        std::fs::write(
-                            path,
-                            self.dump.get_aoc_bytes_uncached(
-                                Path::new("Aoc/0010")
-                                    .join(canon_rel)
-                                    .join(&diff_file)
-                            ).with_context(|| format!("Could not find Aoc map file {hash}"))?
-                        ).with_context(|| format!("Failed to copy {hash} from dlc dump"))
-                    } else {
-                        std::fs::write(
-                            path,
-                            self.dump.get_bytes_uncached(canon_rel.join(&diff_file))
-                                .with_context(|| format!("Could not find base map file {hash}"))?
-                        ).with_context(|| format!("Failed to copy {hash} from base dump"))
-                    }
-                },
-                "Static" => {
-                    if self.current_root != self.path &&
-                        let root_path = self.path
-                            .join("map_tmp")
-                            .join(canon_rel)
-                            .join(&diff_file) &&
-                        root_path.exists() {
-                        std::fs::copy(&root_path, path)
-                            .map(|_| {})
-                            .with_context(|| format!("Failed to copy {hash} from root"))
-                    } else {
-                        std::fs::write(
-                            path,
-                            dump_static_pack.get(&canon_rel.join(&diff_file).to_string_lossy())
-                                .with_context(|| format!(
-                                    "Failed to extract {}",
-                                    canon_rel.join(&diff_file).display())
-                                )?
+            let canon = format!("Map/MainField/{section}/{section}_{load_type}.smubin");
+            if !is_root && let Some(root_data) = self.root_maps.get(&canon) {
+                maps.insert(canon, root_data.value().clone());
+            } else {
+                maps.insert(
+                    canon.clone(),
+                    match (load_type, has_aoc_dump) {
+                        ("Dynamic", true) => {
+                            self.dump.get_aoc_bytes_uncached(Path::new("Aoc/0010").join(&canon))
+                                .with_context(|| format!("Could not find Aoc map file {canon}"))?
+                        },
+                        ("Dynamic", false) => {
+                            self.dump.get_bytes_uncached(&canon)
+                                .with_context(|| format!("Could not find base map file {canon}"))?
+                        },
+                        ("Static", _) => {
+                            dump_static_pack.get(&canon)
+                                .with_context(|| format!("Failed to extract {canon}"))?
                                 .data
-                        ).with_context(|| format!("Failed to copy {hash} from dump"))
+                                .into()
+                        },
+                        _ => anyhow::bail!("Invalid hash: {hash}"),
                     }
-                },
-                _ => anyhow::bail!("Invalid hash: {}", hash),
+                );
             }
+            Ok(())
         })
         .collect::<Result<Vec<_>>>()?;
         Ok(())
@@ -175,24 +139,25 @@ impl BnpConverter {
         if !maps_path.exists() { return Ok(()) }
 
         log::debug!("Processing maps log");
-        let map_tmp = self.current_root.join("map_tmp").join("Map").join("MainField");
+        let maps = if self.current_root == self.path {
+            self.root_maps.clone()
+        } else {
+            self.opt_maps.clone()
+        };
         Byml::from_text(fs::read_to_string(maps_path)?)
             .context("Could not parse maps log")?
             .into_map()?
             .into_par_iter()
             .map(|(section, diff)| -> Result<()> {
-                let (square, load_type) = section.split_once('_')
-                    .ok_or(anyhow!("Bad map diff"))?;
-                let path = map_tmp
-                    .join(square)
-                    .join(format!("{square}_{load_type}.smubin"));
+                let square = section.split_once('_')
+                    .ok_or(anyhow!("Bad map diff"))?
+                    .0;
+                let canon = format!("Map/MainField/{square}/{section}.smubin");
                 let mut base = Byml::from_binary(
-                    decompress(
-                        std::fs::read(&path)
-                            .with_context(|| format!("Failed to read {}", path.display()))?
+                        decompress(maps.get(&canon).expect("Lost a map file?").value())
+                            .with_context(|| format!("Failed to decompress map {canon}"))?
                     )
-                    .with_context(|| format!("Failed to decompress map {}", path.display()))?
-                )?;
+                    .with_context(|| format!("Failed to read map {canon}"))?;
                 merge_map(&mut base, diff)
                     .with_context(||
                         if !self.dump.source().file_exists(Path::new("Pack/AocMainField.pack")) {
@@ -202,7 +167,7 @@ impl BnpConverter {
                             format!("Failed to rebuild {section}.")
                         }
                     )?;
-                fs::write(&path, compress(base.to_binary(self.platform.into())))?;
+                maps.insert(canon, compress(base.to_binary(self.platform.into())));
                 Ok(())
             })
             .collect::<Result<Vec<_>>>()?;
@@ -240,34 +205,33 @@ impl BnpConverter {
                 ret
             })
             .unwrap_or_else(|| SarcWriter::from_sarc(&dump_pack));
-        let map_tmp = self.current_root.join("map_tmp");
         let dynamic_prefix = if has_aoc_dump {
             self.current_root.join(self.aoc)
         } else {
             self.current_root.join(self.content)
         };
 
-        for x in 'A'..'K' {
-            for y in 1..9 {
-                let static_path = format!("Map/MainField/{x}-{y}/{x}-{y}_Static.smubin");
-                let stc = map_tmp.join(&static_path);
-                if stc.exists() {
-                    merged_pack.add_file(&static_path, std::fs::read(stc)?);
-                }
-                let dynamic_path = format!("Map/MainField/{x}-{y}/{x}-{y}_Dynamic.smubin");
-                let dynamic = map_tmp.join(&dynamic_path);
-                if dynamic.exists() {
-                    let out = dynamic_prefix.join(&dynamic_path);
-                    out.parent().iter().try_for_each(fs::create_dir_all)?;
-                    std::fs::copy(dynamic, out)?;
-                }
+        let maps = if self.current_root == self.path {
+            self.root_maps.clone()
+        } else {
+            self.opt_maps.clone()
+        };
+        for map in maps.iter() {
+            let canon = map.key();
+            // char 30 will always be S - Static - or D - Dynamic
+            if canon.chars().nth(30).expect("Infallible") == 'S' {
+                merged_pack.add_file(canon, map.value().clone());
+            } else {
+                let out = dynamic_prefix.join(canon);
+                out.parent().iter().try_for_each(fs::create_dir_all)?;
+                std::fs::write(out, map.value())?;
             }
         }
 
         dest_path.parent().iter().try_for_each(fs::create_dir_all)?;
         fs::write(dest_path, merged_pack.to_binary())?;
 
-        util::remove_dir_all(map_tmp).context("Failed to remove map_tmp")?;
+        maps.clear();
         Ok(())
     }
 }
