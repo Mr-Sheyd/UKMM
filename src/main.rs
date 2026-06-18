@@ -18,12 +18,12 @@ use cli::Ukmm;
 
 #[cfg(target_os = "windows")]
 #[link(name = "Kernel32")]
-extern "system" {
+unsafe extern "system" {
     fn AttachConsole(pid: i32) -> bool;
 }
 #[cfg(target_os = "windows")]
 #[link(name = "User32")]
-extern "system" {
+unsafe extern "system" {
     fn MessageBoxW(hwnd: i32, message: *const i8, title: *const i8, utype: usize) -> i32;
 }
 
