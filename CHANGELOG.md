@@ -5,6 +5,14 @@ All notable changes to UKMM will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## Unreleased
+
+**Fixed**
+
+- Fixed the Open Emulator button on Windows... again...
+  - Will probably need to tweak it further in a future patch, so that people who
+    don't use any CLI switches don't have issues with possible spaces in the paths
+
 ## [0.17.0-1] 2026-04-10
 
 This release is a hotfix for 0.17.0, which fixes conversions from the old pending
