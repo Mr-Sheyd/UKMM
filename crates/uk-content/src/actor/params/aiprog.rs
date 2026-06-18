@@ -499,7 +499,6 @@ impl Writer {
         }
     }
 
-    #[allow(clippy::unwrap_used)]
     fn entry_to_list(&mut self, entry: AIEntry) -> usize {
         if let Some(index) = self
             .finished
@@ -555,9 +554,9 @@ impl Writer {
                         *self
                             .ais
                             .get_mut(&name)
-                            .unwrap()
+                            .unwrap_or_else(|| panic!("Err line 557: {}", &name))
                             .object_mut("ChildIdx")
-                            .unwrap() = children;
+                            .unwrap_or_else(|| panic!("Err line 559: ChildIdx inside {}", &name)) = children;
                     }
                     self.finished.insert(def, index);
                     index
@@ -575,9 +574,9 @@ impl Writer {
                         *self
                             .ais
                             .get_mut(&name)
-                            .unwrap()
+                            .unwrap_or_else(|| panic!("Err line 577: {}", &name))
                             .object_mut("ChildIdx")
-                            .unwrap() = children;
+                            .unwrap_or_else(|| panic!("Err line 579: ChildIdx inside {}", &name)) = children;
                     }
                     self.finished.insert(def, index);
                     index

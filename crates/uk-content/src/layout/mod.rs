@@ -35,7 +35,6 @@ impl Mergeable for LayoutArchive {
         )
     }
 
-    #[allow(clippy::unwrap_used)]
     fn merge(&self, diff: &Self) -> Self {
         let keys: HashSet<String> = self.0.keys().chain(diff.0.keys()).cloned().collect();
         Self(
@@ -46,7 +45,7 @@ impl Mergeable for LayoutArchive {
                         .get(&k)
                         .or_else(|| self.0.get(&k))
                         .map(|v| v.to_vec())
-                        .unwrap();
+                        .expect("Layout archive merging failed");
                     (k, v)
                 })
                 .collect(),

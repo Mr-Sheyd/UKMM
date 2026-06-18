@@ -425,7 +425,7 @@ impl App {
                                     .to_string(),
                             )
                         })
-                    ))
+                    ).context(std::backtrace::Backtrace::force_capture()))
                 }
             };
             if let Some(d) = core.settings().dump() {

@@ -61,6 +61,9 @@ fn main() -> Result<()> {
                     }
                 }
                 gui::tasks::wait_ipc();
+                std::panic::set_hook(Box::new(|_| {
+                    println!("{}", std::backtrace::Backtrace::force_capture());
+                }));
                 if let Err(e) = std::panic::catch_unwind(gui::main) {
                     display_error(e);
                     if let Some(file) = logger::LOGGER.log_path() {

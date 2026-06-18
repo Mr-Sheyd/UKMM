@@ -232,8 +232,8 @@ impl Manager {
                     .context("Failed to remove symlink to old symlinked dlc")?;
             }
             else if settings.current_mode == Platform::WiiU &&
-                util::is_symlink(&dest_aoc.parent().unwrap()) {
-                util::remove_symlink(&dest_aoc.parent().unwrap())
+                util::is_symlink(dest_aoc.parent().unwrap()) {
+                util::remove_symlink(dest_aoc.parent().unwrap())
                     .context("Failed to remove symlink to old symlinked dlc")?;
             }
             if !dest_content.exists() {

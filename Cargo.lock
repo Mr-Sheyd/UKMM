@@ -4575,7 +4575,7 @@ checksum = "6c20b6793b5c2fa6553b250154b78d6d0db37e72700ae35fad9387a46f487c97"
 [[package]]
 name = "rstb"
 version = "1.0.0"
-source = "git+https://github.com/GingerAvalanche/rstb-rust.git?branch=chemical#65599d9edf11bdc5c4820dbde2422e52eefd49e0"
+source = "git+https://github.com/GingerAvalanche/rstb-rust.git?branch=chemical#886d543bc4e81a8d5bd7b8f074d2f0d117368e55"
 dependencies = [
  "crc",
  "include-flate",
