@@ -13,6 +13,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   to running in circles in rare cases when looking for/reading the title list cache
 - Replaced several bare unwraps with custom panic messages. It's still not the most
   clear, but it's better than "called Option::unwrap() on a None value"
+- Made RSTB calculation not fail if AI Programs got a little wonky
+  - This is technically not a fix, because it's just allowing "broken" AI Programs
+    through. The AI Programs in question are ones where the merger adds values, but
+    doesn't delete any that should be deleted. This is technically a bug, but fixing
+    it would require a breaking change. Since the AI Programs don't cause unintended
+    behavior in the game, I'm letting this one go for now, and will fix it when I
+    eventually rewrite *every* merger (or at least most of them)
 
 **Fixed**
 
