@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.17.1] 2026-07-01
 
+**Added**
+
+- Added experimental support for converting map-mod bnps when dlc is not installed
+
 **Changed**
 
 - Cleaned up Cemu importer code a bit. Should be slightly faster and less prone
