@@ -60,6 +60,7 @@ uk-localization = { path = "crates/uk-localization" }
 uk-manager = { path = "crates/uk-manager" }
 uk-mod = { path = "crates/uk-mod" }
 uk-reader = { path = "crates/uk-reader" }
+uk-settings = { path = "crates/uk-settings" }
 uk-ui = { path = "crates/uk-ui" }
 uk-util = { path = "crates/uk-util" }
 xflags = "0.3.1"
@@ -82,9 +83,9 @@ members = [
     "crates/uk-manager",
     "crates/uk-mod",
     "crates/uk-reader",
+    "crates/uk-settings",
     "crates/uk-ui",
     "crates/uk-util",
-
 ]
 
 [workspace.package]

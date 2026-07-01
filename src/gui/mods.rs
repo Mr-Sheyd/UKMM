@@ -3,6 +3,7 @@ use std::{collections::HashMap, process::Command, sync::OnceLock};
 use strfmt::Format;
 use uk_localization::string_ext::LocString;
 use uk_manager::mods::Mod;
+use uk_settings::SETTINGS;
 use uk_ui::{
     egui::{
         self, epaint::Margin, text::LayoutJob, Align, Button, Color32, CursorIcon, Id, Key,
@@ -57,13 +58,13 @@ impl App {
                     ui.vertical_centered(|ui| {
                         ui.add_space(80.0);
                         
-                        let has_config = self.core.settings().platform_config().is_some();
+                        let has_config = SETTINGS.read().platform_config().is_some();
                         
                         // Main message
                         if !has_config {
                             let message = "Helper_Modlist_NoConfig".localize();
                             let vars = HashMap::from(
-                                [("platform".to_string(), self.core.settings().current_mode.to_string())]
+                                [("platform".to_string(), SETTINGS.read().current_mode.to_string())]
                             );
                             let prompt = message.format(&vars).unwrap();
                             
@@ -463,8 +464,8 @@ impl App {
     ) -> Option<ContextMenuMessage> {
         let mut result = None;
         ui.menu_button("Mod_Send".localize(), |ui| {
-            for profile in core
-                .settings()
+            for profile in SETTINGS
+                .read()
                 .profiles()
                 .filter(|p| core.mod_manager().profile().key() != p)
             {

@@ -1,5 +1,5 @@
 use uk_localization::string_ext::LocString;
-use uk_manager::settings::Platform;
+use uk_settings::{Platform, SETTINGS};
 use uk_mod::{Meta, ModCategory};
 use util::SmartStringWrapper;
 
@@ -347,16 +347,15 @@ impl App {
             })
             .show(ui, |ui| {
                 ui.horizontal(|ui| {
-                    let current_profile = self
-                        .core
-                        .settings()
+                    let current_profile = SETTINGS
+                        .read()
                         .platform_config()
                         .map(|c| c.profile.to_string())
                         .unwrap_or_else(|| "Default".to_owned());
                     ComboBox::from_id_source("profiles")
                         .selected_text(&current_profile)
                         .show_ui(ui, |ui| {
-                            self.core.settings().profiles().for_each(|profile| {
+                            SETTINGS.read().profiles().for_each(|profile| {
                                 if ui
                                     .selectable_label(
                                         profile.as_str() == current_profile,

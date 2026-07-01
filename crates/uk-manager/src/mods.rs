@@ -17,11 +17,7 @@ use serde_with::{serde_as, DisplayFromStr};
 use smartstring::alias::String;
 use uk_content::platform_prefixes;
 use uk_mod::{pack::ModPacker, unpack::ModReader, Manifest, Meta, ModOption};
-
-use crate::{
-    settings::Settings,
-    util::{self, extract_7z, HashMap},
-};
+use uk_settings::{SETTINGS, util::{self, HashMap}};
 
 type ManifestCache = LazyLock<RwLock<HashMap<(usize, Vec<PathBuf>), Result<Arc<Manifest>>>>>;
 
@@ -282,7 +278,6 @@ pub struct Manager {
     dir: PathBuf,
     profiles: DashMap<String, Profile>,
     current_profile: String,
-    settings: Weak<RwLock<Settings>>,
 }
 
 impl Manager {
@@ -313,13 +308,11 @@ impl Manager {
             name.clone(),
             serde_yaml::from_str(
                 &fs_err::read_to_string(
-                        self.settings
-                        .upgrade()
-                        .expect("Settings is GONE!")
-                        .read()
-                        .profiles_dir()
-                        .join(name.to_string())
-                        .join("profile.yml")
+                        SETTINGS
+                            .read()
+                            .profiles_dir()
+                            .join(name.to_string())
+                            .join("profile.yml")
                     )
                     .expect("Lost profile we just created?")
             )
@@ -344,24 +337,23 @@ impl Manager {
         Ok(())
     }
 
-    pub fn init(settings: &Arc<RwLock<Settings>>) -> Result<Self> {
+    pub fn init() -> Result<Self> {
         log::info!("Initializing mod manager");
+        let settings = SETTINGS.read();
         let all_mods = glob::glob(
-            &settings.read().mods_dir().join("*.zip").to_string_lossy()
+            &settings.mods_dir().join("*.zip").to_string_lossy()
         )?.map(|p| {
             let mod_ = Mod::from_reader(ModReader::open(p?, vec![])?);
             Ok((mod_.meta.name.clone(), mod_))
         }).collect::<Result<HashMap<String, Mod>>>()?;
         let current_profile = settings
-            .read()
             .platform_config()
             .as_ref()
             .map(|c| c.profile.clone())
             .unwrap_or_else(|| "Default".into());
         log::info!("Current profile: {}", current_profile);
-        let path = settings.read().profiles_dir();
+        let path = settings.profiles_dir();
         let profiles = settings
-            .read()
             .profiles()
             .map(|profile| {
                 let profile_path = path.join(profile.as_str()).join("profile.yml");
@@ -388,7 +380,6 @@ impl Manager {
             dir: path,
             profiles,
             current_profile: current_profile.clone(),
-            settings: Arc::downgrade(settings),
         };
         self_.create_profile_if(&current_profile)?;
         Ok(self_)
@@ -461,10 +452,7 @@ impl Manager {
             ..Default::default()
         };
         let sanitized = sfn::sanitise_with_options(&mod_name, &san_opts);
-        let stored_path = self
-            .settings
-            .upgrade()
-            .expect("Settings is GONE!")
+        let stored_path = SETTINGS
             .read()
             .mods_dir()
             .join(sanitized + ".zip");
@@ -604,7 +592,6 @@ impl Manager {
 }
 
 pub fn convert_gfx(
-    core: &crate::core::Manager,
     path: &Path,
     meta: Option<Meta>,
 ) -> Result<PathBuf> {
@@ -627,7 +614,7 @@ pub fn convert_gfx(
         };
 
         let find_root = |path: &Path| -> Option<PathBuf> {
-            let (content, dlc) = platform_prefixes(core.settings().current_mode.into());
+            let (content, dlc) = platform_prefixes(SETTINGS.read().current_mode.into());
             jwalk::WalkDir::new(path)
                 .into_iter()
                 .filter_map(Result::ok)
@@ -657,7 +644,7 @@ pub fn convert_gfx(
         } else if ext == "7Z" {
             log::info!("Extracting 7Z file...");
             let tmpdir = util::get_temp_folder();
-            extract_7z(path, &tmpdir).context("Failed to extract 7Z file")?;
+            util::extract_7z(path, &tmpdir).context("Failed to extract 7Z file")?;
             if meta.is_none() {
                 find_rules(&tmpdir).context("Could not find rules.txt in extracted mod")?
             } else {
@@ -702,7 +689,7 @@ pub fn convert_gfx(
     log::debug!("Temp folder: {}", temp.display());
     log::info!("Attempting to convert mod...");
     let packer = ModPacker::new(path, &*temp, meta, vec![
-        core.settings()
+        SETTINGS.read()
             .dump()
             .context("No dump available for current platform")?,
     ])?;

@@ -24,12 +24,9 @@ use uk_mod::{
     unpack::{ModReader, ModUnpacker},
     Manifest,
 };
+use uk_settings::{DeployMethod, Platform, SETTINGS, util};
 
-use crate::{
-    mods,
-    settings::{DeployMethod, Platform, Settings},
-    util,
-};
+use crate::mods;
 use pending_log::PendingLog;
 
 #[derive(Debug, Default, Serialize, Deserialize)]
@@ -40,7 +37,6 @@ struct OldPendingLog {
 
 #[derive(Debug)]
 pub struct Manager {
-    settings: Weak<RwLock<Settings>>,
     mod_manager: Weak<RwLock<mods::Manager>>,
     pending_log: RwLock<PendingLog>,
     //pending_files: RwLock<Manifest>,
@@ -49,16 +45,13 @@ pub struct Manager {
 
 impl Manager {
     #[inline(always)]
-    fn log_path(settings: &Settings) -> PathBuf {
-        settings.platform_dir().join("pending.yml")
+    fn log_path() -> PathBuf {
+        SETTINGS.read().platform_dir().join("pending.yml")
     }
 
-    pub fn init(
-        settings: &Arc<RwLock<Settings>>,
-        mod_manager: &Arc<RwLock<mods::Manager>>,
-    ) -> Result<Self> {
+    pub fn init(mod_manager: &Arc<RwLock<mods::Manager>>) -> Result<Self> {
         log::info!("Initializing deployment manager");
-        let pending = match fs::read_to_string(Self::log_path(&settings.read()))
+        let pending = match fs::read_to_string(Self::log_path())
             .map_err(anyhow_ext::Error::from) {
             Ok(text) => {
                 match serde_yaml::from_str::<PendingLog>(&text)
@@ -105,7 +98,6 @@ impl Manager {
             }
         };
         Ok(Self {
-            settings: Arc::downgrade(settings),
             mod_manager: Arc::downgrade(mod_manager),
             pending_log: RwLock::new(pending),
         })
@@ -123,11 +115,7 @@ impl Manager {
 
     pub fn reset_pending(&self) -> Result<()> {
         self.pending_log.write().clear();
-        let settings = self
-            .settings
-            .upgrade()
-            .expect("YIKES the settings manager is gone");
-        let settings = settings.read();
+        let settings = SETTINGS.read();
         let source = settings.merged_dir();
         let (content, aoc) = platform_prefixes(settings.current_mode.into());
         let config = settings
@@ -145,18 +133,14 @@ impl Manager {
 
     pub fn save(&self) -> Result<()> {
         fs::write(
-            Self::log_path(&self.settings.upgrade().unwrap().read()),
+            Self::log_path(),
             serde_yaml::to_string(&self.pending_log.read().clone())?,
         )?;
         Ok(())
     }
 
     pub fn deploy(&self) -> Result<()> {
-        let settings = self
-            .settings
-            .upgrade()
-            .expect("YIKES, the settings manager is gone");
-        let settings = settings.read();
+        let settings = SETTINGS.read();
         let mut lang = Language::USen;
         let mut profile = String::from("");
         let config = settings
@@ -390,11 +374,7 @@ impl Manager {
             .mod_manager
             .upgrade()
             .context("YIKES, the mod manager system is gone")?;
-        let settings = self
-            .settings
-            .upgrade()
-            .context("YIKES, the settings manager is gone")?;
-        let settings = settings.try_read()
+        let settings = SETTINGS.try_read()
             .context("Could not read settings")?;
         let dump = settings
             .dump()

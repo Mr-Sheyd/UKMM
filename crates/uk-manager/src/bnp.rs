@@ -17,9 +17,9 @@ use rustc_hash::FxHashMap;
 use uk_content::{constants::Language, resource::ResourceData};
 use uk_mod::pack::ModPacker;
 use uk_reader::ResourceReader;
+use uk_settings::{Platform, util, SETTINGS};
 use uk_util::PathExt;
 
-use crate::{settings::Platform, util::extract_7z};
 mod actorinfo;
 mod areadata;
 mod aslist;
@@ -497,31 +497,31 @@ impl BnpConverter {
     }
 }
 
-pub fn unpack_bnp(core: &crate::core::Manager, path: &Path) -> Result<PathBuf> {
-    let tempdir = crate::util::get_temp_folder();
+pub fn unpack_bnp(path: &Path) -> Result<PathBuf> {
+    let tempdir = util::get_temp_folder();
     if path.is_dir() {
-        crate::util::copy_dir(path, tempdir.as_path())
+        util::copy_dir(path, tempdir.as_path())
             .context("Failed to copy files to temp folder")?;
     } else {
         log::info!("Extracting BNP…");
-        extract_7z(path, &tempdir).context("Failed to extract BNP")?;
+        util::extract_7z(path, &tempdir).context("Failed to extract BNP")?;
     }
     if tempdir.join("rules.txt").exists() && !tempdir.join("info.json").exists() {
         old::Bnp2xConverter::new(&tempdir)
             .convert()
             .context("Failed to upgrade 2.x BNP")?;
     }
-    let (content, aoc) = uk_content::platform_prefixes(core.settings().current_mode.into());
+    let (content, aoc) = uk_content::platform_prefixes(SETTINGS.read().current_mode.into());
     log::info!("Processing BNP logs…");
     let converter = BnpConverter {
-        platform: core.settings().current_mode,
-        game_lang: core
-            .settings()
+        platform: SETTINGS.read().current_mode,
+        game_lang: SETTINGS
+            .read()
             .platform_config()
             .context("No config for current platform. Have you configured your settings?")?
             .language,
-        dump: core
-            .settings()
+        dump: SETTINGS
+            .read()
             .dump()
             .context("No dump for current mode. Have you configured your settings?")?,
         content,
@@ -539,8 +539,8 @@ pub fn unpack_bnp(core: &crate::core::Manager, path: &Path) -> Result<PathBuf> {
     Ok(path)
 }
 
-pub fn convert_bnp(core: &crate::core::Manager, path: &Path) -> Result<PathBuf> {
-    let tempdir = unpack_bnp(core, path).with_context(|| {
+pub fn convert_bnp(path: &Path) -> Result<PathBuf> {
+    let tempdir = unpack_bnp(path).with_context(|| {
         format!(
             "Failed to unpack {}",
             path.file_name()
@@ -556,7 +556,7 @@ pub fn convert_bnp(core: &crate::core::Manager, path: &Path) -> Result<PathBuf> 
     };
     let name = meta.name.clone();
     let new_mod = ModPacker::new(tempdir, tempfile.as_path(), Some(meta), vec![
-        core.settings()
+        SETTINGS.read()
             .dump()
             .context("No dump for current platform")?,
     ])
@@ -571,5 +571,5 @@ fn test_convert() {
     let path = dirs2::download_dir()
         .unwrap()
         .join("clearcameraui_nodetection.bnp"); // join("rebalance.bnp"); //("SecondWindv1.9.13.bnp");
-    unpack_bnp(&super::core::Manager::init().unwrap(), path.as_ref()).unwrap();
+    unpack_bnp(path.as_ref()).unwrap();
 }

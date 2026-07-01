@@ -1,4 +1,5 @@
 use uk_localization::string_ext::LocString;
+use uk_settings::SETTINGS;
 use super::*;
 
 impl App {
@@ -45,7 +46,7 @@ impl App {
             ui.close_menu();
             open::that(Settings::config_dir()).unwrap_or(());
         }
-        let settings = self.core.settings();
+        let settings = SETTINGS.read();
         if ui.button("Menu_Tools_StorageFolder".localize()).clicked() {
             ui.close_menu();
             open::that(&settings.storage_dir).unwrap_or(());
