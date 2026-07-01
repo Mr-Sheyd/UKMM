@@ -205,8 +205,13 @@ impl Manager {
                 }
                 if actual_src.exists() && !actual_dest.exists() {
                     log::info!("Creating new symlink for {} folder", type_);
-                    util::create_symlink(actual_dest, actual_src)
-                        .context("Failed to deploy symlink")?;
+                    if let Err(e) = util::create_symlink(actual_dest, actual_src) {
+                        log::warn!("[lenient] Failed to create symlink: {}. Trying to remove broken path and retry...", e);
+                        let _ = util::remove_symlink(actual_dest);
+                        let _ = util::remove_dir_all(actual_dest);
+                        util::create_symlink(actual_dest, actual_src)
+                            .context("Failed to deploy symlink after removing existing broken path")?;
+                    }
                 } else if !actual_src.exists() && actual_dest.exists() {
                     log::info!("No {} files, removing link", type_);
                     util::remove_symlink(actual_dest)

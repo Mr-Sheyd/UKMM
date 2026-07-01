@@ -396,34 +396,22 @@ impl BnpConverter {
             }
         };
 
-        self.handle_actorinfo()
-            .context("Failed to process actor info log")?;
-        self.handle_aslist()
-            .context("Failed to process AS list log")?;
-        self.handle_areadata()
-            .context("Failed to process areadata log")?;
-        self.handle_deepmerge()
-            .context("Failed to process deepmerge log")?;
-        self.handle_drops().context("Failed to process drops log")?;
-        self.handle_dungeon_static()
-            .context("Failed to process dungeon static log")?;
-        self.handle_events()
-            .context("Failed to process eventinfo log")?;
-        self.handle_gamedata()
-            .context("Failed to process gamedata log")?;
-        self.handle_mainfield_static()
-            .context("Failed to process mainfield static log")?;
-        self.handle_maps().context("Failed to process maps log")?;
-        self.handle_quests()
-            .context("Failed to process quests log")?;
-        self.handle_residents()
-            .context("Failed to process residents log")?;
-        self.handle_savedata()
-            .context("Failed to process savedata log")?;
-        self.handle_shops().context("Failed to process shops log")?;
-        self.handle_effects()
-            .context("Failed to process status effect log")?;
-        self.handle_texts().context("Failed to process texts log")?;
+        if let Err(e) = self.handle_actorinfo() { log::warn!("[lenient] Failed to process actor info log: {}", e); }
+        if let Err(e) = self.handle_aslist() { log::warn!("[lenient] Failed to process AS list log: {}", e); }
+        if let Err(e) = self.handle_areadata() { log::warn!("[lenient] Failed to process areadata log: {}", e); }
+        if let Err(e) = self.handle_deepmerge() { log::warn!("[lenient] Failed to process deepmerge log: {}", e); }
+        if let Err(e) = self.handle_drops() { log::warn!("[lenient] Failed to process drops log: {}", e); }
+        if let Err(e) = self.handle_dungeon_static() { log::warn!("[lenient] Failed to process dungeon static log: {}", e); }
+        if let Err(e) = self.handle_events() { log::warn!("[lenient] Failed to process eventinfo log: {}", e); }
+        if let Err(e) = self.handle_gamedata() { log::warn!("[lenient] Failed to process gamedata log: {}", e); }
+        if let Err(e) = self.handle_mainfield_static() { log::warn!("[lenient] Failed to process mainfield static log: {}", e); }
+        if let Err(e) = self.handle_maps() { log::warn!("[lenient] Failed to process maps log: {}", e); }
+        if let Err(e) = self.handle_quests() { log::warn!("[lenient] Failed to process quests log: {}", e); }
+        if let Err(e) = self.handle_residents() { log::warn!("[lenient] Failed to process residents log: {}", e); }
+        if let Err(e) = self.handle_savedata() { log::warn!("[lenient] Failed to process savedata log: {}", e); }
+        if let Err(e) = self.handle_shops() { log::warn!("[lenient] Failed to process shops log: {}", e); }
+        if let Err(e) = self.handle_effects() { log::warn!("[lenient] Failed to process status effect log: {}", e); }
+        if let Err(e) = self.handle_texts() { log::warn!("[lenient] Failed to process texts log: {}", e); }
 
         let packs = DashSet::clone(&self.packs);
         self.packs.clear();
