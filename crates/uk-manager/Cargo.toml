@@ -16,7 +16,6 @@ jwalk = { workspace = true }
 lenient_semver = { workspace = true }
 log = { workspace = true }
 parking_lot = { workspace = true, features = ["serde"] }
-path-slash = { workspace = true }
 rayon = { workspace = true }
 roead = { workspace = true, features = ["yaml"] }
 rstb = { workspace = true }
@@ -26,7 +25,6 @@ serde = { workspace = true }
 serde_json = { workspace = true }
 serde_yaml = { workspace = true }
 serde_with = { workspace = true }
-sevenz-rust = { workspace = true }
 smartstring = { workspace = true, features = ["serde"] }
 unrar = { workspace = true }
 zip = { workspace = true, default-features = false, features = ["deflate"] }
