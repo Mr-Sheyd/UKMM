@@ -26,6 +26,7 @@ serde_json = { workspace = true }
 serde_yaml = { workspace = true }
 smartstring = { workspace = true }
 typetag = { workspace = true }
+zip = { workspace = true }
 zstd = { workspace = true }
 
 botw-utils = { git = "https://github.com/GingerAvalanche/botw-utils-rust.git" }
