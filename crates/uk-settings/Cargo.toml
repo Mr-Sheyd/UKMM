@@ -1,0 +1,25 @@
+[package]
+name = "uk-settings"
+edition = "2024"
+version.workspace = true
+
+[dependencies]
+anyhow_ext = { workspace = true }
+dirs2 = { workspace = true }
+fs-err = { workspace = true }
+jwalk = { workspace = true }
+log = { workspace = true }
+parking_lot = { workspace = true }
+roead = { workspace = true }
+rstb = { workspace = true }
+rustc-hash = { workspace = true }
+serde = { workspace = true }
+serde_with = { workspace = true }
+serde_yaml = { workspace = true }
+sevenz-rust = { workspace = true }
+smartstring = { workspace = true }
+
+tempfile = "3.3"
+uk-content = { path = "../uk-content" }
+uk-localization = { path = "../uk-localization" }
+uk-reader = { path = "../uk-reader" }
