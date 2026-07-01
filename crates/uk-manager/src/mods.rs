@@ -3,7 +3,7 @@ use std::{
     io::BufReader,
     ops::Deref,
     path::{Path, PathBuf},
-    sync::{Arc, LazyLock, Weak},
+    sync::{Arc, LazyLock},
 };
 
 use anyhow_ext::{Context, Result};
