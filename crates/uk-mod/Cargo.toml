@@ -26,7 +26,6 @@ serde_json = { workspace = true }
 serde_yaml = { workspace = true }
 smartstring = { workspace = true }
 typetag = { workspace = true }
-zip = { workspace = true, default-features = false, features = ["deflate"] }
 zstd = { workspace = true }
 
 botw-utils = { git = "https://github.com/GingerAvalanche/botw-utils-rust.git" }
@@ -37,6 +36,7 @@ ouroboros = "0.18.4"
 piz = "0.5.1"
 uk-content = { path = "../uk-content" }
 uk-reader = { path = "../uk-reader" }
+uk-settings = { path = "../uk-settings" }
 uk-util = { path = "../uk-util" }
 
 [dev-dependencies]

@@ -37,6 +37,7 @@ use uk_content::{
     util::{HashMap, IndexSet},
 };
 use uk_reader::{ResourceLoader, ResourceReader};
+use uk_settings::SETTINGS;
 use uk_util::PathExt as UkPathExt;
 
 use crate::{Manifest, Meta, ModOption};
@@ -527,22 +528,39 @@ impl ModUnpacker {
             ];
             for job in jobs {
                 match job.join() {
-                    Ok(Err(e)) => bail!(e),
+                    Ok(Err(e)) =>
+                        if SETTINGS.read().suppress_merge {
+                            log::warn!("{}",
+                                e.downcast::<std::string::String>()
+                                    .or_else(|e| {
+                                        e.downcast::<&'static str>().map(|s| (*s).into())
+                                    })
+                                    .unwrap_or_else(|_|
+                                        "An unknown error was suppressed.".to_string()
+                                    )
+                            )
+                        } else {
+                            bail!(e)
+                        },
                     Ok(Ok(what)) => log::info!("Finished unpacking {what}"),
                     Err(e) => {
-                        bail!(
-                            e.downcast::<std::string::String>()
-                                .or_else(|e| {
-                                    e.downcast::<&'static str>().map(|s| Box::new((*s).into()))
-                                })
-                                .unwrap_or_else(|_| {
-                                    Box::new(
-                                        "An unknown error occured, check the log for possible \
-                                         details."
-                                            .to_string(),
-                                    )
-                                })
-                        )
+                        let msg = e.downcast::<std::string::String>()
+                            .or_else(|e| {
+                                e.downcast::<&'static str>()
+                                    .map(|s| Box::new((*s).into()))
+                            });
+                        if SETTINGS.read().suppress_merge {
+                            log::warn!("{}",
+                                msg.unwrap_or_else(|_|
+                                    Box::new("An unknown error was suppressed.".to_string())
+                                )
+                            )
+                        } else {
+                            bail!(msg.unwrap_or_else(|_| Box::new(
+                                "An unknown error occured, check the log for possible \
+                                 details."
+                                    .to_string())))
+                        }
                     }
                 }
             }
