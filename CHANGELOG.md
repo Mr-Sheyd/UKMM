@@ -26,6 +26,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fixed the Open Emulator button on Windows... again...
   - Will probably need to tweak it further in a future patch, so that people who
     don't use any CLI switches don't have issues with possible spaces in the paths
+- Make ZArchive opening panic-safe and validate archives on load
+  - Thanks @emiyl
 
 ## [0.17.0-1] 2026-04-10
 
