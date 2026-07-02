@@ -29,11 +29,6 @@ smartstring = { workspace = true, features = ["serde"] }
 unrar = { workspace = true }
 zip = { workspace = true, default-features = false, features = ["deflate"] }
 
-<<<<<<< HEAD
-tempfile = "3.3"
-=======
-split-iter = "0.1.0"
->>>>>>> 1a02fd7 (Move settings out of uk-manager into own crate)
 uk-content = { path = "../uk-content" }
 uk-localization = { path = "../uk-localization" }
 uk-mod = { path = "../uk-mod" }
