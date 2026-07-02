@@ -30,7 +30,6 @@ use serde::Serialize;
 use smartstring::alias::String;
 use uk_content::{
     canonicalize,
-    constants::Language,
     platform_content, platform_prefixes,
     prelude::{Endian, Mergeable, Resource},
     resource::{MergeableResource, ResourceData, SarcMap},
@@ -38,7 +37,7 @@ use uk_content::{
 };
 use uk_reader::{ResourceLoader, ResourceReader};
 use uk_settings::SETTINGS;
-use uk_util::PathExt as UkPathExt;
+use uk_util::{PathExt as UkPathExt, language::Language};
 
 use crate::{Manifest, Meta, ModOption};
 

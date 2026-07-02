@@ -152,7 +152,7 @@ impl App {
                     });
                     ui.add_space(8.);
                     if let Some(context) = err.chain().find_map(|e| {
-                        e.downcast_ref::<uk_content::UKError>()
+                        e.downcast_ref::<uk_util::uk_error::UKError>()
                             .and_then(|e| e.context_data())
                     }) {
                         egui::CollapsingHeader::new("Error_Context".localize()).show(ui, |ui| {

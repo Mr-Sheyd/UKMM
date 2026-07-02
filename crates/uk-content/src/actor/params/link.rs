@@ -6,8 +6,9 @@ use crate::{
     actor::{InfoSource, ParameterResource},
     prelude::*,
     util::{self, DeleteSet},
-    Result, UKError,
 };
+
+use uk_util::uk_error::{Result, UKError};
 
 #[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 

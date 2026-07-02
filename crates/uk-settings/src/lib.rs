@@ -13,9 +13,9 @@ use parking_lot::RwLock;
 use serde::{Deserialize, Serialize};
 use serde_with::{serde_as, DefaultOnError};
 use smartstring::alias::String;
-use uk_content::{constants::Language, prelude::Endian};
 use uk_localization::LocLang;
 use uk_reader::ResourceReader;
+use uk_util::{endianness::Endian, language::Language};
 
 pub static SETTINGS: LazyLock<RwLock<Settings>> = LazyLock::new(Settings::load);
 
@@ -332,7 +332,7 @@ impl Settings {
             fs::create_dir_all(Self::path().parent().unwrap())?;
         }
         log::debug!("Saving settings:\n{:#?}", self);
-        let _ = crate::util::USE_SZ.compare_exchange_weak(
+        let _ = util::USE_SZ.compare_exchange_weak(
             !self.system_7z,
             self.system_7z,
             std::sync::atomic::Ordering::Relaxed,

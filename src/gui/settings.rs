@@ -10,7 +10,6 @@ use anyhow::Result;
 use parking_lot::RwLock;
 use rustc_hash::FxHashMap;
 use serde::Deserialize;
-use uk_content::{constants::Language, prelude::Endian};
 use uk_localization::LocLang;
 use uk_settings::{DeployConfig, DeployLayout, DeployMethod, Platform, PlatformSettings, SETTINGS};
 use uk_reader::ResourceReader;
@@ -20,7 +19,7 @@ use uk_ui::{
     icons::{self, IconButtonExt},
     visuals::Theme,
 };
-use uk_util::OptionResultExt;
+use uk_util::{OptionResultExt, endianness::Endian, language::Language};
 
 use super::{App, Message};
 

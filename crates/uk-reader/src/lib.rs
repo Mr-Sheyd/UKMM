@@ -18,9 +18,9 @@ use roead::sarc::Sarc;
 use serde::{Deserialize, Serialize};
 use smartstring::alias::String;
 use uk_content::{
-    canonicalize, constants::Language, platform_prefixes, prelude::Endian, resource::*,
+    canonicalize, platform_prefixes, resource::*,
 };
-use uk_util::PathExt;
+use uk_util::{PathExt, endianness::Endian, language::Language, uk_error::UKError};
 
 use self::{unpacked::Unpacked, zarchive::ZArchive};
 
@@ -37,14 +37,14 @@ pub enum ROMError {
     #[error(transparent)]
     WUAError(#[from] ::zarchive::ZArchiveError),
     #[error(transparent)]
-    UKError(#[from] uk_content::UKError),
+    UKError(#[from] UKError),
     #[error("{0}")]
     OtherMessage(&'static str),
     #[error(transparent)]
     Any(#[from] anyhow_ext::Error),
 }
 
-impl From<ROMError> for uk_content::UKError {
+impl From<ROMError> for UKError {
     fn from(err: ROMError) -> Self {
         Self::Any(err.into())
     }
@@ -359,13 +359,7 @@ impl ResourceReader {
         .into())
     }
 
-    pub fn languages(
-        &self,
-    ) -> dashmap::mapref::one::RefMut<
-        '_,
-        std::path::PathBuf,
-        std::vec::Vec<uk_content::constants::Language>,
-    > {
+    pub fn languages(&self) -> dashmap::mapref::one::RefMut<'_, PathBuf, Vec<Language>> {
         static LANGS: LazyLock<DashMap<PathBuf, Vec<Language>>> = LazyLock::new(Default::default);
         LANGS
             .entry(self.source().host_path().to_path_buf())

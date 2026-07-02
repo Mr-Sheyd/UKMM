@@ -1,7 +1,9 @@
 use roead::byml::Byml;
 use serde::{Deserialize, Serialize};
 
-use crate::{prelude::*, util::DeleteMap, Result, UKError};
+use crate::{prelude::*, util::DeleteMap};
+
+use uk_util::uk_error::{Result, UKError};
 
 #[derive(Debug, Clone, Default, PartialEq, Deserialize, Serialize)]
 
@@ -47,11 +49,11 @@ impl Mergeable for QuestProduct {
 }
 
 impl Resource for QuestProduct {
-    fn from_binary(data: impl AsRef<[u8]>) -> crate::Result<Self> {
+    fn from_binary(data: impl AsRef<[u8]>) -> Result<Self> {
         (&Byml::from_binary(data.as_ref())?).try_into()
     }
 
-    fn into_binary(self, endian: crate::prelude::Endian) -> Vec<u8> {
+    fn into_binary(self, endian: Endian) -> Vec<u8> {
         Byml::from(self).to_binary(endian.into())
     }
 

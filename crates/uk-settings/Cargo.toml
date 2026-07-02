@@ -20,6 +20,6 @@ sevenz-rust = { workspace = true }
 smartstring = { workspace = true }
 
 tempfile = "3.3"
-uk-content = { path = "../uk-content" }
 uk-localization = { path = "../uk-localization" }
 uk-reader = { path = "../uk-reader" }
+uk-util = { path = "../uk-util" }

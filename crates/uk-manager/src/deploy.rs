@@ -19,12 +19,13 @@ use roead::yaz0::{compress, decompress};
 use rstb::ResourceSizeTable;
 use serde::{Deserialize, Serialize};
 use smartstring::alias::String;
-use uk_content::{constants::Language, platform_prefixes};
+use uk_content::platform_prefixes;
 use uk_mod::{
     unpack::{ModReader, ModUnpacker},
     Manifest,
 };
 use uk_settings::{DeployMethod, Platform, SETTINGS, util};
+use uk_util::language::Language;
 
 use crate::mods;
 use pending_log::PendingLog;

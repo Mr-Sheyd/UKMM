@@ -3,8 +3,9 @@ use roead::{params, aamp::{ParameterList, ParameterObject, Parameter::String32}}
 use serde::{Deserialize, Serialize};
 use smartstring::alias::String;
 use crate::prelude::Mergeable;
-use crate::{UKError, Result};
 use crate::util::DeleteMap;
+
+use uk_util::uk_error::{Result, UKError};
 
 #[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]
 pub struct HoldEvent {

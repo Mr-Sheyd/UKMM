@@ -11,6 +11,8 @@ use roead::{
     types::FixedSafeString,
 };
 
+use uk_util::uk_error::{self, UKError};
+
 pub fn diff_plist<P: ParameterListing + From<ParameterList>>(base: &P, other: &P) -> P {
     ParameterList {
         lists:   other
@@ -172,14 +174,14 @@ pub fn simple_index_merge<T: Clone + PartialEq>(
 pub struct BymlHashValue(pub u32);
 
 impl TryFrom<Byml> for BymlHashValue {
-    type Error = crate::UKError;
+    type Error = UKError;
 
-    fn try_from(value: Byml) -> crate::Result<Self> {
+    fn try_from(value: Byml) -> uk_error::Result<Self> {
         Ok(match value {
             Byml::U32(v) => Self(v),
             Byml::I32(v) => Self(u32::from_le_bytes(v.to_le_bytes())),
             _ => {
-                return Err(crate::UKError::WrongBymlType(
+                return Err(UKError::WrongBymlType(
                     "not an integer".into(),
                     "an integer",
                 ));
@@ -189,14 +191,14 @@ impl TryFrom<Byml> for BymlHashValue {
 }
 
 impl TryFrom<&Byml> for BymlHashValue {
-    type Error = crate::UKError;
+    type Error = UKError;
 
-    fn try_from(value: &Byml) -> crate::Result<Self> {
+    fn try_from(value: &Byml) -> uk_error::Result<Self> {
         Ok(match value {
             Byml::U32(v) => Self(*v),
             Byml::I32(v) => Self(u32::from_le_bytes(v.to_le_bytes())),
             _ => {
-                return Err(crate::UKError::WrongBymlType(
+                return Err(UKError::WrongBymlType(
                     "not an integer".into(),
                     "an integer",
                 ));
@@ -206,11 +208,11 @@ impl TryFrom<&Byml> for BymlHashValue {
 }
 
 impl FromStr for BymlHashValue {
-    type Err = crate::UKError;
+    type Err = UKError;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         s.parse::<u32>()
-            .map_err(|_| crate::UKError::Other("Invalid BYML key"))
+            .map_err(|_| UKError::Other("Invalid BYML key"))
             .map(|h| h.into())
     }
 }

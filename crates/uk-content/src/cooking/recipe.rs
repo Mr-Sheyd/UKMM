@@ -2,10 +2,9 @@ use roead::byml::Byml;
 use serde::{Deserialize, Serialize};
 use smartstring::{LazyCompact, SmartString};
 
-use crate::{
-    util::{DeleteVec, HashMap},
-    Result, UKError,
-};
+use crate::{util::{DeleteVec, HashMap}};
+
+use uk_util::uk_error::{Result, UKError};
 
 #[derive(Debug, Clone, Default, PartialEq, Deserialize, Serialize)]
 

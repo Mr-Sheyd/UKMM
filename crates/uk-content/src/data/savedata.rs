@@ -8,11 +8,9 @@ use roead::{
 use serde::{Deserialize, Serialize};
 use uk_content_derive::BymlData;
 
-use crate::{
-    prelude::*,
-    util::{HashMap, SortedDeleteSet},
-    Result, UKError,
-};
+use crate::{prelude::*, util::{HashMap, SortedDeleteSet}};
+
+use uk_util::uk_error::{Result, UKError};
 
 #[derive(Debug, Clone, Default, PartialEq, Deserialize, Serialize, BymlData)]
 pub struct SaveDataHeader {
@@ -274,7 +272,7 @@ impl Mergeable for SaveDataPack {
 }
 
 impl Resource for SaveDataPack {
-    fn from_binary(data: impl AsRef<[u8]>) -> crate::Result<Self> {
+    fn from_binary(data: impl AsRef<[u8]>) -> Result<Self> {
         Self::from_sarc(&Sarc::new(data.as_ref())?)
     }
 

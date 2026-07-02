@@ -8,8 +8,9 @@ use crate::{
     constants::{Time, Weather},
     prelude::*,
     util::{DeleteSet, IteratorExt},
-    Result, UKError,
 };
+
+use uk_util::uk_error::{Result, UKError};
 
 #[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]
 
@@ -341,7 +342,7 @@ impl Mergeable for LifeCondition {
 }
 
 impl InfoSource for LifeCondition {
-    fn update_info(&self, info: &mut roead::byml::Map) -> crate::Result<()> {
+    fn update_info(&self, info: &mut roead::byml::Map) -> Result<()> {
         use roead::byml::Byml;
         if let Some(display_dist) = self.display_dist {
             info.insert("traverseDist".into(), display_dist.into());

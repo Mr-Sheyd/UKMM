@@ -20,12 +20,11 @@ use serde_with::{serde_as, DefaultOnError};
 use smartstring::alias::String;
 use uk_content::{
     canonicalize,
-    constants::Language,
     platform_prefixes,
     prelude::{Endian, Mergeable},
     resource::{is_mergeable_sarc, ResourceData},
 };
-use uk_util::PathExt as UkPathExt;
+use uk_util::{PathExt as UkPathExt, language::Language};
 use zip::{
     write::{FileOptions, SimpleFileOptions},
     ZipWriter as ZipW,

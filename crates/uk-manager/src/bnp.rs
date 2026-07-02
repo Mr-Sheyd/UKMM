@@ -14,11 +14,11 @@ use roead::{
     yaz0::{compress_if, decompress_if},
 };
 use rustc_hash::FxHashMap;
-use uk_content::{constants::Language, resource::ResourceData};
+use uk_content::resource::ResourceData;
 use uk_mod::pack::ModPacker;
 use uk_reader::ResourceReader;
 use uk_settings::{Platform, util, SETTINGS};
-use uk_util::PathExt;
+use uk_util::{PathExt, language::Language};
 
 mod actorinfo;
 mod areadata;

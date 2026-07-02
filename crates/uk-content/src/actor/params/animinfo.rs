@@ -5,6 +5,8 @@ use uk_util::OptionResultExt;
 
 use crate::{actor::ParameterResource, prelude::*};
 
+use uk_util::uk_error::Result;
+
 #[derive(Debug, Clone, Default, PartialEq, Deserialize, Serialize)]
 
 pub struct AnimationInfo(pub Byml);
@@ -34,7 +36,7 @@ impl ParameterResource for AnimationInfo {
 }
 
 impl Resource for AnimationInfo {
-    fn from_binary(data: impl AsRef<[u8]>) -> crate::Result<Self> {
+    fn from_binary(data: impl AsRef<[u8]>) -> Result<Self> {
         Ok((&Byml::from_binary(data.as_ref())?).into())
     }
 

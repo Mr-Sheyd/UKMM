@@ -12,7 +12,6 @@ use http_req::request::RedirectPolicy;
 use join_str::jstr;
 use serde::Deserialize;
 use strfmt::Format;
-use uk_content::constants::Language;
 use uk_manager::{
     bnp::convert_bnp,
     core::Manager,
@@ -34,7 +33,7 @@ use uk_settings::{
     SETTINGS
 };
 use uk_reader::ResourceReader;
-use uk_util::PathExt;
+use uk_util::{PathExt, language::Language};
 
 use super::{package::ModPackerBuilder, util::response, Message};
 use crate::INTERFACE;
