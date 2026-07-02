@@ -5917,7 +5917,6 @@ dependencies = [
 name = "uk-content"
 version = "0.17.1"
 dependencies = [
- "almost",
  "anyhow",
  "indexmap 2.14.0",
  "itertools 0.13.0",
