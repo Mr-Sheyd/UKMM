@@ -62,7 +62,6 @@ uk-mod = { path = "crates/uk-mod" }
 uk-reader = { path = "crates/uk-reader" }
 uk-ui = { path = "crates/uk-ui" }
 uk-util = { path = "crates/uk-util" }
-which = "6.0.3"
 xflags = "0.3.1"
 
 [build-dependencies]
