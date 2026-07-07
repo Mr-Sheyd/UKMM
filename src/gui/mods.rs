@@ -173,7 +173,7 @@ impl App {
                             let width = header
                                 .col(|ui| {
                                     let is_current = self.sort.0 == sort;
-                                    let mut label = label.to_owned();
+                                    let mut label = label.into_owned();
                                     if is_current {
                                         if self.sort.1 {
                                             label += " ⏷";
@@ -228,8 +228,7 @@ impl App {
                     self.mods
                         .iter()
                         .enumerate()
-                        .filter(|(_, m)| self.selected.contains(m))
-                        .last()
+                        .rfind(|(_, m)| self.selected.contains(m))
                 })
                 .flatten()
             {
@@ -260,8 +259,7 @@ impl App {
         if ui.input_mut(|i| i.pointer.any_released()) {
             ui.memory_mut(|m| m.data.insert_temp(Id::new("drag_delay_frames"), 0usize));
             if let Some((_start_index, dest_index)) = self
-                .drag_index
-                .and_then(|d| self.hover_index.map(|h| (d, h)))
+                .drag_index.zip(self.hover_index)
                 .filter(|(s, d)| s != d)
             {
                 self.do_update(Message::MoveSelected(dest_index))
