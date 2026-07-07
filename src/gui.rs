@@ -241,6 +241,7 @@ pub struct App {
     channel: (Sender<Message>, Receiver<Message>),
     mods: Vec<Mod>,
     displayed_mods: Vec<Mod>,
+    mod_list_filter: String,
     selected: Vec<Mod>,
     install_queue: VecDeque<PathBuf>,
     update_mod: Option<Mod>,
@@ -306,6 +307,7 @@ impl App {
             profiles_state: RefCell::new(profiles::ProfileManagerState::new(&core)),
             meta_input: MetaInputModal::new(send.clone()),
             displayed_mods: mods.clone(),
+            mod_list_filter: "".parse().unwrap(),
             mods,
             temp_settings,
             changelog: {

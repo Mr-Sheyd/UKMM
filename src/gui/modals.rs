@@ -389,14 +389,22 @@ impl App {
                         ui.add_space(20.);
                         ui.label(
                             RichText::new(format!(
-                                "{} {} / {} {}",
+                                "{} {} / {} {} / {} {}",
+                                self.mods.iter().filter(|m| m.enabled).count(),
+                                "Profile_ActiveMods_2".localize(),
                                 self.mods.len(),
                                 "Profile_ActiveMods_1".localize(),
-                                self.mods.iter().filter(|m| m.enabled).count(),
-                                "Profile_ActiveMods_2".localize()
+                                self.mods.iter()
+                                    .filter(|m| m.meta.name.to_lowercase()
+                                        .contains(&self.mod_list_filter.to_lowercase()))
+                                    .count(),
+                                "Profile_ActiveMods_3".localize(),
                             ))
                             .strong(),
                         );
+                        ui.add_space(20.);
+                        ui.text_edit_singleline(&mut self.mod_list_filter);
+                        ui.label(RichText::new("Mod_Filter".localize()).strong());
                     });
                 });
             });

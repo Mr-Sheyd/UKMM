@@ -213,8 +213,19 @@ impl App {
                         });
                     })
                     .body(|body| {
-                        body.rows(*text_height, self.displayed_mods.len(), |row| {
-                            self.render_mod_row(row.index(), row);
+                        let filtered = self.displayed_mods
+                            .iter()
+                            .enumerate()
+                            .filter(|&(_, _mod)| _mod
+                                .meta
+                                .name
+                                .to_lowercase()
+                                .contains(&self.mod_list_filter.to_lowercase()))
+                            .map(|(idx, _mod)| idx)
+                            .collect::<Vec<_>>();
+                        body.rows(*text_height, filtered.len(), |row| {
+                            let index = filtered[row.index()];
+                            self.render_mod_row(index, row);
                         });
                     });
             });
