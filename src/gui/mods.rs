@@ -173,7 +173,7 @@ impl App {
                             let width = header
                                 .col(|ui| {
                                     let is_current = self.sort.0 == sort;
-                                    let mut label = label.to_owned();
+                                    let mut label = label.into_owned();
                                     if is_current {
                                         if self.sort.1 {
                                             label += " ⏷";
@@ -213,8 +213,19 @@ impl App {
                         });
                     })
                     .body(|body| {
-                        body.rows(*text_height, self.displayed_mods.len(), |row| {
-                            self.render_mod_row(row.index(), row);
+                        let filtered = self.displayed_mods
+                            .iter()
+                            .enumerate()
+                            .filter(|&(_, _mod)| _mod
+                                .meta
+                                .name
+                                .to_lowercase()
+                                .contains(&self.mod_list_filter.to_lowercase()))
+                            .map(|(idx, _mod)| idx)
+                            .collect::<Vec<_>>();
+                        body.rows(*text_height, filtered.len(), |row| {
+                            let index = filtered[row.index()];
+                            self.render_mod_row(index, row);
                         });
                     });
             });
@@ -228,8 +239,7 @@ impl App {
                     self.mods
                         .iter()
                         .enumerate()
-                        .filter(|(_, m)| self.selected.contains(m))
-                        .last()
+                        .rfind(|(_, m)| self.selected.contains(m))
                 })
                 .flatten()
             {
@@ -260,8 +270,7 @@ impl App {
         if ui.input_mut(|i| i.pointer.any_released()) {
             ui.memory_mut(|m| m.data.insert_temp(Id::new("drag_delay_frames"), 0usize));
             if let Some((_start_index, dest_index)) = self
-                .drag_index
-                .and_then(|d| self.hover_index.map(|h| (d, h)))
+                .drag_index.zip(self.hover_index)
                 .filter(|(s, d)| s != d)
             {
                 self.do_update(Message::MoveSelected(dest_index))
