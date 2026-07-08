@@ -759,7 +759,7 @@ dependencies = [
 [[package]]
 name = "botw-utils"
 version = "0.5.1"
-source = "git+https://github.com/GingerAvalanche/botw-utils-rust.git#b08a3d67bc4560bd65538f1dae126e4ade0e4a0a"
+source = "git+https://github.com/GingerAvalanche/botw-utils-rust.git#a2ca9c570ef94f465ec797e5e4b9b82c5a39c1d3"
 dependencies = [
  "include-flate",
  "once_cell",
@@ -1319,9 +1319,9 @@ dependencies = [
 
 [[package]]
 name = "cxx"
-version = "1.0.196"
+version = "1.0.197"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ac6f8908ed0826ab0aec7c8358a4de3a9b26c5ed391a5dc5135765d2fd1aa8fb"
+checksum = "00424da159cc5adcb4eeea7e7b5cb1d96df41f5fa695ec596922181bdc36232a"
 dependencies = [
  "cc",
  "cxx-build",
@@ -1334,9 +1334,9 @@ dependencies = [
 
 [[package]]
 name = "cxx-build"
-version = "1.0.196"
+version = "1.0.197"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6d8ae25c0ce72ac21a77b5deec4f49b452238ef97072f697dd6fd752b1355ecd"
+checksum = "43e05269dbed4dab7072ae0f04ef31799ad189d52ce2ac12710c2997b754f86a"
 dependencies = [
  "cc",
  "codespan-reporting",
@@ -1349,9 +1349,9 @@ dependencies = [
 
 [[package]]
 name = "cxxbridge-cmd"
-version = "1.0.196"
+version = "1.0.197"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "27d53791812143bd27f74ab6055f22e875f04c59bbef0ca03d714ebec6f6f484"
+checksum = "e2f017b07e0da7f425642339faff0edc9f0de6459a18180183d086d1f3381e89"
 dependencies = [
  "clap 4.6.1",
  "codespan-reporting",
@@ -1363,15 +1363,15 @@ dependencies = [
 
 [[package]]
 name = "cxxbridge-flags"
-version = "1.0.196"
+version = "1.0.197"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "fd557619f7dc2252bf7373f6bec5600ce60a2b477e5b3b84eb4e074bb297795e"
+checksum = "293d267f43a5778bf3b89fff2a658f081166e7f152d9640e2ee3d917d065a5fc"
 
 [[package]]
 name = "cxxbridge-macro"
-version = "1.0.196"
+version = "1.0.197"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7fe465fc5b9d0231ea141c4fae714a08f4f907855e1a7ca10cc90ab6c8b12ece"
+checksum = "72dd233dc128223fe85d2afa5c617c79743c0f47fb495b69234b5da680d4986a"
 dependencies = [
  "indexmap 2.14.0",
  "proc-macro2 1.0.106",
@@ -4796,8 +4796,7 @@ checksum = "3582f63211428f83597b51b2ddb88e2a91a9d52d12831f9d08f5e624e8977422"
 [[package]]
 name = "roead"
 version = "1.0.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "caa4e7e992638f39b4ecbde6f11e02dfbcf81dae42954ee5fba32111dd9e39ce"
+source = "git+https://github.com/NiceneNerd/roead.git#2afd32710a186fcc2ec096a6b46aa768d0e76e01"
 dependencies = [
  "almost",
  "base64 0.22.1",
@@ -4848,7 +4847,7 @@ checksum = "6c20b6793b5c2fa6553b250154b78d6d0db37e72700ae35fad9387a46f487c97"
 [[package]]
 name = "rstb"
 version = "1.0.0"
-source = "git+https://github.com/GingerAvalanche/rstb-rust.git?branch=chemical#6f449576e5ecffb9cb42686393d25d5420d73c6b"
+source = "git+https://github.com/GingerAvalanche/rstb-rust.git?branch=chemical#3b6cf2ba072fcc19059ad35b4efc114bf2346a73"
 dependencies = [
  "crc",
  "dirs2",
