@@ -29,7 +29,7 @@ typetag = { workspace = true }
 zip = { workspace = true, default-features = false, features = ["deflate"] }
 zstd = { workspace = true }
 
-botw-utils = "0.5.1"
+botw-utils = { git = "https://github.com/GingerAvalanche/botw-utils-rust.git" }
 configparser = "3.0.1"
 enum_dispatch = "0.3.8"
 mmap-rs = "0.6.1"
@@ -41,4 +41,3 @@ uk-util = { path = "../uk-util" }
 
 [dev-dependencies]
 env_logger = "0.11.3"
-tempfile = "3.3.0"

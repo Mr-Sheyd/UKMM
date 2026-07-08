@@ -102,7 +102,7 @@ static TEMP_FS: LazyLock<RwLock<HashSet<PathBuf>>> =
 
 #[allow(clippy::unwrap_used)]
 pub fn get_temp_folder() -> MappedRwLockReadGuard<'static, PathBuf> {
-    let temp = tempfile::tempdir().unwrap().into_path();
+    let temp = tempfile::tempdir().unwrap().keep();
     TEMP_FS.write().insert(temp.clone());
     RwLockReadGuard::map(TEMP_FS.read(), |tmps| unsafe {
         tmps.get(&temp).unwrap_unchecked()
