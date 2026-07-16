@@ -264,10 +264,36 @@ impl ModPacker {
             } else if source.join(content_nx).exists() || source.join(dlc_nx).exists() {
                 Endian::Little
             } else {
-                anyhow_ext::bail!(
-                    "No content or DLC folder found in source at {}",
-                    source.display()
-                );
+                // [lenient] Нет стандартных папок content/aoc — пробуем угадать платформу
+                let fallback_endian = match &meta.platform {
+                    ModPlatform::Specific(e) => {
+                        log::warn!(
+                            "[lenient] No content or DLC folder found in source at {}. \
+                             Using platform from mod metadata ({:?}). \
+                             Мод может работать некорректно.",
+                            source.display(), e
+                        );
+                        *e
+                    }
+                    _ => {
+                        // Большинство старых BNP модов без корректных
+                        // метаданных платформы были для WiiU
+                        log::warn!(
+                            "[lenient] No content or DLC folder found in source at {}. \
+                             Platform unknown, falling back to WiiU (Big Endian). \
+                             Мод может работать некорректно.",
+                            source.display()
+                        );
+                        Endian::Big
+                    }
+                };
+                // Создаём content-папку, чтобы упаковщик не упал дальше
+                let (fallback_content, _) = platform_prefixes(fallback_endian);
+                let content_dir = source.join(fallback_content);
+                if !content_dir.exists() {
+                    let _ = std::fs::create_dir_all(&content_dir);
+                }
+                fallback_endian
             };
             let dest_file = if dest.is_dir() {
                 dest.join(sanitise(&meta.name)).with_extension("zip")
